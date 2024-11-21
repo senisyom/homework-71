@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { dishesReducer } from "../store/dishesSlice";
+import { dishesReducer } from "../dishesSlise";
 
 export const store = configureStore({
   reducer: {
@@ -8,5 +8,5 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-export const AppDispatch = typeof store.dispatch;
 
+export type AppDispatch = typeof store.dispatch;
