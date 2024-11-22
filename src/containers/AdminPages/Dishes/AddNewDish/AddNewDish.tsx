@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../../app/hooks";
-import { createDish } from "../../../../dishesThunk";
+import { createDish, updateDish } from "../../../../dishesThunk";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { selectDishes } from "../../../../dishesSlise";
+import { IDish } from "../../../../types";
+import Navbar from "../../../../components/Navbar/Navbar";
 
 const AddNewDish = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { id } = useParams();
   const dishes = useSelector(selectDishes);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const [dish, setDish] = useState({
+  const [dish, setDish] = useState<{
+    title: string;
+    price: string;
+    picture: string;
+    id?: string;
+  }>({
     title: "",
     price: "",
     picture: "",
@@ -23,14 +30,17 @@ const AddNewDish = () => {
       const dishToEdit = dishes.find((dish) => dish.id === id);
       if (dishToEdit) {
         setDish(dishToEdit);
+      } else {
+        toast.error("Блюдо не найдено");
+        navigate("/admin/dishes");
       }
     }
-  }, [id, dishes]);
+  }, [id, dishes, navigate]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setDish((prevDish) => ({
-      ...prevDish,
+    setDish((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
@@ -38,28 +48,32 @@ const AddNewDish = () => {
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const newDish = {
-      ...dish,
-      id: Date.now().toString(),
-    };
-
-    try {
-      await dispatch(createDish(newDish));
-      toast.success("Блюдо добавлено");
-
-      setDish({
-        title: "",
-        price: "",
-        picture: "",
-      });
-      navigate("/admin/dishes");
-    } catch {
-      toast.error("Ошибка добавления блюда");
+    if (id) {
+      try {
+        await dispatch(updateDish(dish as IDish));
+        toast.success("Блюдо обновлено");
+        navigate("/admin/dishes");
+      } catch {
+        toast.error("Ошибка при обновлении блюда");
+      }
+    } else {
+      const newDish = { ...dish, id: Date.now().toString() };
+      try {
+        await dispatch(createDish(newDish as IDish));
+        toast.success("Блюдо добавлено");
+        setDish({ title: "", price: "", picture: "" });
+        navigate("/admin/dishes");
+      } catch {
+        toast.error("Ошибка при добавлении блюда");
+      }
     }
   };
 
   return (
     <div className="container w-50 mx-auto mt-4">
+      <header>
+        <Navbar />
+      </header>
       <h2 className="mb-4">
         {id ? "Редактировать блюдо" : "Добавить новое блюдо"}
       </h2>

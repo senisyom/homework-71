@@ -1,30 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
-import { selectDishes, selectFetchLoading } from "../../../../dishesSlise";
-import { IDish } from "../../../../types";
-import { toast } from "react-toastify";
+import {
+  selectDishes,
+  selectDeleteLoading,
+  selectFetchLoading,
+} from "../../../../dishesSlise";
 import { fetchDishes, removeDish } from "../../../../dishesThunk";
-import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const DishList = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const dishes = useAppSelector(selectDishes);
   const loading = useAppSelector(selectFetchLoading);
-
-  const [selectedDish, setSelectedDish] = useState<IDish | null>(null);
+  const deleteLoading = useAppSelector(selectDeleteLoading);
 
   useEffect(() => {
     dispatch(fetchDishes());
   }, [dispatch]);
 
-  if (loading) {
-    return <p>Загрузка...</p>;
-  }
-
   const onDeleteDish = (id: string) => {
     dispatch(removeDish(id))
       .then(() => {
-        setSelectedDish(null);
+        dispatch(fetchDishes());
+        toast.success("Блюдо успешно удалено!");
       })
       .catch((error) => {
         console.error("Ошибка удаления:", error);
@@ -32,12 +32,20 @@ const DishList = () => {
       });
   };
 
+  const onEditDish = (id: string) => {
+    navigate(`/admin/dishes/${id}/edit`);
+  };
+
+  if (loading) {
+    return <p>Загрузка...</p>;
+  }
+
   return (
     <div className="container-sm">
       <div className="d-flex justify-content-between mt-3">
-        <h2>Dishes</h2>
-        <NavLink to={"/admin-add-new-dishes"}>
-          <button className="btn btn-primary">Add new dish</button>
+        <h2>Доступные блюда</h2>
+        <NavLink to="/admin-add-new-dishes">
+          <button className="btn btn-primary">Добавить новое блюдо</button>
         </NavLink>
       </div>
 
@@ -46,37 +54,34 @@ const DishList = () => {
       ) : (
         dishes.map((dish) => (
           <div className="card m-4" key={dish.id}>
-            <div className="card-body">
-              <a href="">
-                <h5
-                  className="card-title m-3"
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
+            <div className="card-body d-flex align-items-center">
+              <img
+                src={dish.picture}
+                alt={dish.title}
+                className="img-thumbnail"
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              />
+              <div className="ms-3">
+                <h5 className="card-title mb-1">{dish.title}</h5>
+                <p className="mb-0">
+                  Цена: {dish.price} <strong>KGZ</strong>{" "}
+                </p>
+              </div>
+              <div className="ms-auto">
+                <button
+                  className="btn btn-primary me-2"
+                  onClick={() => onEditDish(dish.id)}
                 >
-                  Dish: {dish.title}
-                </h5>
-                <h5
-                  className="card-title m-3"
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
+                  Редактировать
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => onDeleteDish(dish.id)}
+                  disabled={deleteLoading === dish.id}
                 >
-                  Price: {dish.price}
-                </h5>
-              </a>
-              <button
-                className="btn btn-danger"
-                onClick={() => onDeleteDish(dish.id)}
-              >
-                Edit
-              </button>
-              <button
-                className="btn btn-danger"
-                onClick={() => onDeleteDish(dish.id)}
-              >
-                Delete
-              </button>
+                  {deleteLoading === dish.id ? "Удаление..." : "Удалить"}
+                </button>
+              </div>
             </div>
           </div>
         ))

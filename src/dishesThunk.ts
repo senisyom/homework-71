@@ -9,6 +9,14 @@ export const createDish = createAsyncThunk<void, ApiDish>(
   }
 );
 
+export const updateDish = createAsyncThunk<void, IDish>(
+  "dishes/update",
+  async (dish) => {
+    const { id, ...updatedDishData } = dish;
+    await axiosApi.put(`/dishes/${id}.json`, updatedDishData);
+  }
+);
+
 export const fetchDishes = createAsyncThunk<IDish[]>(
   "dishes/fetch",
   async () => {
