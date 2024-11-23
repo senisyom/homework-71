@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../../app/hooks";
-import { createDish, updateDish } from "../../../../dishesThunk";
+import { createDish, updateDish } from "../../../../store/dishesThunk";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { selectDishes } from "../../../../dishesSlise";
+import { selectDishes } from "../../../../store/dishesSlise";
 import { IDish } from "../../../../types";
 import Navbar from "../../../../components/Navbar/Navbar";
 
@@ -31,7 +31,6 @@ const AddNewDish = () => {
       if (dishToEdit) {
         setDish(dishToEdit);
       } else {
-        toast.error("Блюдо не найдено");
         navigate("/admin/dishes");
       }
     }
@@ -51,20 +50,18 @@ const AddNewDish = () => {
     if (id) {
       try {
         await dispatch(updateDish(dish as IDish));
-        toast.success("Блюдо обновлено");
         navigate("/admin/dishes");
       } catch {
-        toast.error("Ошибка при обновлении блюда");
+        toast.error("Ошибка");
       }
     } else {
       const newDish = { ...dish, id: Date.now().toString() };
       try {
         await dispatch(createDish(newDish as IDish));
-        toast.success("Блюдо добавлено");
         setDish({ title: "", price: "", picture: "" });
         navigate("/admin/dishes");
       } catch {
-        toast.error("Ошибка при добавлении блюда");
+        toast.error("Ошибка добавлении ");
       }
     }
   };
@@ -74,9 +71,7 @@ const AddNewDish = () => {
       <header>
         <Navbar />
       </header>
-      <h2 className="mb-4">
-        {id ? "Редактировать блюдо" : "Добавить новое блюдо"}
-      </h2>
+
       <form onSubmit={onSubmit}>
         <div className="form-floating mb-4">
           <input
@@ -114,7 +109,7 @@ const AddNewDish = () => {
           <label>Фото</label>
         </div>
         <button type="submit" className="btn btn-primary">
-          {id ? "Сохранить изменения" : "Сохранить"}
+          Сохранить
         </button>
       </form>
     </div>

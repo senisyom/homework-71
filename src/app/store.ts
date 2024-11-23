@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { dishesReducer } from "../dishesSlise";
+import { dishesReducer } from "../store/dishesSlise";
 
 export const store = configureStore({
   reducer: {

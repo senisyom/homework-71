@@ -4,8 +4,8 @@ import {
   selectDishes,
   selectDeleteLoading,
   selectFetchLoading,
-} from "../../../../dishesSlise";
-import { fetchDishes, removeDish } from "../../../../dishesThunk";
+} from "../../../../store/dishesSlise";
+import { fetchDishes, removeDish } from "../../../../store/dishesThunk";
 import { toast } from "react-toastify";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -24,11 +24,9 @@ const DishList = () => {
     dispatch(removeDish(id))
       .then(() => {
         dispatch(fetchDishes());
-        toast.success("Блюдо успешно удалено!");
       })
-      .catch((error) => {
-        console.error("Ошибка удаления:", error);
-        toast.error("Ошибка удаления блюда.");
+      .catch(() => {
+        toast.error("Ошибка удаления");
       });
   };
 
@@ -44,7 +42,7 @@ const DishList = () => {
     <div className="container-sm">
       <div className="d-flex justify-content-between mt-3">
         <h2>Доступные блюда</h2>
-        <NavLink to="/admin-add-new-dishes">
+        <NavLink to="/admin/add-new-dish">
           <button className="btn btn-primary">Добавить новое блюдо</button>
         </NavLink>
       </div>
@@ -72,14 +70,14 @@ const DishList = () => {
                   className="btn btn-primary me-2"
                   onClick={() => onEditDish(dish.id)}
                 >
-                  Редактировать
+                  Edit
                 </button>
                 <button
                   className="btn btn-danger"
                   onClick={() => onDeleteDish(dish.id)}
                   disabled={deleteLoading === dish.id}
                 >
-                  {deleteLoading === dish.id ? "Удаление..." : "Удалить"}
+                  {deleteLoading === dish.id ? "Удаление..." : "Delete"}
                 </button>
               </div>
             </div>

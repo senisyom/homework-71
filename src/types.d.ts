@@ -5,6 +5,13 @@ export interface IDish {
   picture: string;
 }
 
+export interface IDishMutation {
+  name: string;
+  description: string;
+  urlImage: string;
+  price: number;
+}
+
 export interface ApiDish {
   title: string;
   price: string;

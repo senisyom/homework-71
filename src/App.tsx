@@ -6,6 +6,7 @@ import AddNewDish from "./containers/AdminPages/Dishes/AddNewDish/AddNewDish";
 import Navbar from "./components/Navbar/Navbar";
 import ClientNavbar from "./components/ClientNavbar/ClientNavbar";
 import ClientPage from "./containers/ClientPage/ClientPage";
+import Orders from "./containers/AdminPages/Orders/Orders";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
                 <Route path="dishes" element={<DishList />} />
                 <Route path="add-new-dish" element={<AddNewDish />} />
                 <Route path="dishes/:id/edit" element={<AddNewDish />} />
+                <Route path="orders" element={<Orders />} />
               </Routes>
             </>
           }
@@ -31,7 +33,7 @@ const App = () => {
             <>
               <ClientNavbar />
               <Routes>
-                <Route path="/" element={<ClientPage/>} />
+                <Route path="/" element={<ClientPage />} />
               </Routes>
             </>
           }

@@ -1,10 +1,13 @@
-import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   selectDishes,
   selectFetchLoading,
-} from "../../dishesSlise";
-import { fetchDishes } from "../../dishesThunk";
+  addDish,
+} from "../../store/dishesSlise";
+import { fetchDishes } from "../../store/dishesThunk";
+import { useEffect } from "react";
+
+import { IDish } from "../../types";
 
 const ClientDishes = () => {
   const dispatch = useAppDispatch();
@@ -15,6 +18,10 @@ const ClientDishes = () => {
     dispatch(fetchDishes());
   }, [dispatch]);
 
+  const AddToCart = (dish: IDish) => {
+    dispatch(addDish(dish));
+  };
+
   if (loading) {
     return <p> Загрузка...</p>;
   }
@@ -24,7 +31,12 @@ const ClientDishes = () => {
         <p>Нет блюд</p>
       ) : (
         dishes.map((dish) => (
-          <div className="card m-4" key={dish.id}>
+          <div
+            className="card m-4"
+            key={dish.id}
+            onClick={() => AddToCart(dish)}
+            style={{ cursor: "pointer" }}
+          >
             <div className="card-body d-flex align-items-center">
               <img
                 src={dish.picture}

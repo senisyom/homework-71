@@ -1,25 +1,39 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createDish, fetchDishes, removeDish } from "./dishesThunk";
-import { IDish } from "./types";
+import { IDish } from "../types";
 
 export interface DishesState {
   items: IDish[];
   isFetching: boolean;
   isCreating: boolean;
   deleteLoading: false | string;
+  cartDishes: { dish: IDish; amount: number }[];
 }
 
 export const initialState: DishesState = {
   items: [],
-  isCreating: false,
   isFetching: false,
+  isCreating: false,
   deleteLoading: false,
+  cartDishes: [],
 };
 
 export const DishesSlice = createSlice({
   name: "dishes",
   initialState,
-  reducers: {},
+  reducers: {
+    addDish: (state, { payload: dish }: PayloadAction<IDish>) => {
+      const indexDish = state.cartDishes.findIndex(
+        (cartDish) => cartDish.dish.id === dish.id
+      );
+
+      if (indexDish === -1) {
+        state.cartDishes.push({ dish, amount: 1 });
+      } else {
+        state.cartDishes[indexDish].amount++;
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createDish.pending, (state) => {
@@ -57,6 +71,8 @@ export const DishesSlice = createSlice({
   },
 });
 
+export const { addDish } = DishesSlice.actions;
+
 export const dishesReducer = DishesSlice.reducer;
 
 export const selectDishes = (state: { dishes: DishesState }) =>
@@ -65,3 +81,5 @@ export const selectFetchLoading = (state: { dishes: DishesState }) =>
   state.dishes.isFetching;
 export const selectDeleteLoading = (state: { dishes: DishesState }) =>
   state.dishes.deleteLoading;
+export const selectCart = (state: { dishes: DishesState }) =>
+  state.dishes.cartDishes;

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axiosApi from "./axiosApi";
-import { ApiDish, ApiDishes, IDish } from "./types";
+import axiosApi from "../axiosApi";
+import { ApiDish, ApiDishes, IDish } from "../types";
 
 export const createDish = createAsyncThunk<void, ApiDish>(
   "dishes/create",
